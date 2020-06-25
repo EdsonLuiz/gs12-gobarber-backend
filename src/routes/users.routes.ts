@@ -14,6 +14,8 @@ usersRouter.post('/', async (request, response) => {
       password,
     });
 
+    delete createdUser.password;
+
     return response.json(createdUser);
   } catch (error) {
     return response.status(400).json({ error: error.message });
