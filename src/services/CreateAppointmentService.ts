@@ -4,12 +4,12 @@ import { getCustomRepository } from 'typeorm';
 import AppointmentRepository from '../repositories/AppointmentsRepository';
 
 interface Resquest {
-  provider: string;
+  provider_id: string;
   date: Date;
 }
 
 class CreateAppointmentService {
-  public async execute({ provider, date }: Resquest): Promise<Appointment> {
+  public async execute({ provider_id, date }: Resquest): Promise<Appointment> {
     const appointmentDate = startOfHour(date);
 
     const appointmentsRepository = getCustomRepository(AppointmentRepository);
@@ -23,7 +23,7 @@ class CreateAppointmentService {
     }
 
     const createdAppointmeent = appointmentsRepository.create({
-      provider,
+      provider_id,
       date: appointmentDate,
     });
 
