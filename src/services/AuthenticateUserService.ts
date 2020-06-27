@@ -3,6 +3,8 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import authConfig from '../config/auth';
 
+import AppError from '../errors/AppError';
+
 import User from '../models/User';
 
 interface Request {
@@ -23,7 +25,8 @@ class AuthenticateUserService {
       where: { email },
     });
 
-    if (!user) throw new Error('Incorrect email | password combination');
+    if (!user)
+      throw new AppError('Incorrect email | password combination', 401);
 
     // user.password = senha criptografada
     // password = senha nao criptografada
@@ -31,7 +34,7 @@ class AuthenticateUserService {
     const passwordIsMatched = await compare(password, user.password);
 
     if (!passwordIsMatched)
-      throw new Error('Incorrect email | password combination');
+      throw new AppError('Incorrect email | password combination', 401);
 
     // Usuario autenticado
     delete user.password;
