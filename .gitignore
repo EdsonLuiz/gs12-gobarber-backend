@@ -1,5 +1,5 @@
 node_modules/
 build/
-tmp/
-temp/*
+tmp/*
+temp/
 !tmp/.gitkeep
