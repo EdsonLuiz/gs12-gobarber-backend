@@ -20,11 +20,6 @@ describe('CreateAppointmentService', () => {
     const sut = makeSut()
     const createAppointmentServiceSpy = jest.spyOn(sut, 'execute')
 
-    const appointmentData = {
-      date: new Date(),
-      provider_id: 'valid_id'
-    }
-
     await sut.execute(appointmentData)
 
     expect(createAppointmentServiceSpy).toHaveBeenCalledWith(appointmentData)
@@ -33,10 +28,7 @@ describe('CreateAppointmentService', () => {
   it('Should be abble to create a new appointment', async () => {
     const createAppointment = makeSut()
 
-    const appointment = await createAppointment.execute({
-      date: new Date(),
-      provider_id: 'valid_id'
-    })
+    const appointment = await createAppointment.execute(appointmentData)
 
     expect(appointment).toHaveProperty('id')
   })
