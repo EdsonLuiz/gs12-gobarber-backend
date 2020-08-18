@@ -6,23 +6,13 @@ import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAut
 import multer from 'multer';
 import uploadConfig from '@config/upload';
 
+import UsersController from '@modules/users/infra/http/controllers/UsersController';
+
 const usersRouter = Router();
+const usersController = new UsersController();
 const upload = multer(uploadConfig);
 
-usersRouter.post('/', async (request, response) => {
-  const { name, email, password } = request.body;
-  const createUserService = container.resolve(CreateUserService);
-
-  const createdUser = await createUserService.execute({
-    email,
-    name,
-    password,
-  });
-
-  delete createdUser.password;
-
-  return response.json(createdUser);
-});
+usersRouter.post('/', usersController.create);
 
 usersRouter.patch(
   '/avatar',
