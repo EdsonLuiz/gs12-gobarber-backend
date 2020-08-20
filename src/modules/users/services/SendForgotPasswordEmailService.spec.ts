@@ -1,6 +1,7 @@
 import FakeUsersRepository from '@modules/users/repositories/fakes/FakeUsersRepository';
 import FakeMailProvider from '@shared/container/providers/MailProvider/fakes/FakeMailProvider';
 import SendForgotPasswordEmailService from './SendForgotPasswordEmailService';
+import AppError from '@shared/errors/AppError';
 
 interface SutTypes {
   sut: SendForgotPasswordEmailService;
@@ -19,7 +20,7 @@ const makeSut = (): SutTypes => {
 };
 
 describe('SendForgotPasswordEmailService', () => {
-  it('Should be able to revocer password using email', async () => {
+  it('Should be able to recover password using email', async () => {
     const { fakeMailProvider, fakeUsersRepository, sut } = makeSut();
     const sendMailSpy = jest.spyOn(fakeMailProvider, 'sendMail');
 
@@ -31,11 +32,19 @@ describe('SendForgotPasswordEmailService', () => {
 
     await fakeUsersRepository.create(userData);
     await sut.execute({
-      email: 'valid@email.com',
+      email: 'valid_email@mail.com',
     });
 
     expect(sendMailSpy).toHaveReturned();
   });
 
-  it('Should not be able to recover a non existing user password', () => {});
+  it('Should not be able to recover a non existing user password', async () => {
+    const { sut } = makeSut();
+
+    const promise = sut.execute({
+      email: 'valid@email.com',
+    });
+
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+  });
 });
