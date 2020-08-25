@@ -4,21 +4,6 @@ import AuthenticateUserService from '@modules/users/services/AuthenticateUserSer
 import CreateUserService from '@modules/users/services/CreateUserService';
 import AppError from '@shared/errors/AppError';
 
-// const fakeUsersRepository = new FakeUsersRepository();
-// const fakeHashProvider = new FakeHashProvider();
-
-// const makeSutiiikjjkj = (): AuthenticateUserService => {
-//   const fakeUsersRepository = new FakeUsersRepository();
-//   const fakeHashProvider = new FakeHashProvider();
-//   return new AuthenticateUserService(fakeUsersRepository, fakeHashProvider);
-// };
-
-// const makeCreateUser = (): CreateUserService => {
-//   const fakeUsersRepository = new FakeUsersRepository();
-//   const fakeHashProvider = new FakeHashProvider();
-//   return new CreateUserService(fakeUsersRepository, fakeHashProvider);
-// };
-
 interface SutTypes {
   sut: AuthenticateUserService;
   makeCreateUser: CreateUserService;
@@ -63,7 +48,7 @@ describe('AuthenticateUserService', () => {
 
     const promise = sut.execute(fakeUserData);
 
-    expect(promise).rejects.toBeInstanceOf(AppError);
+    await expect(promise).rejects.toBeInstanceOf(AppError);
   });
 
   it('Should not be able to authenticate with incorrect password', async () => {
