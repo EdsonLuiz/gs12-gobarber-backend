@@ -1,6 +1,6 @@
 import FakeAppointmentsRepository from '@modules/appointments/repositories/fakes/FakeAppointmentsRepository';
-import CreateAppointmentService from './CreateAppointmentService';
 import AppError from '@shared/errors/AppError';
+import CreateAppointmentService from './CreateAppointmentService';
 
 const makeSut = (): CreateAppointmentService => {
   const fakeAppointmentsRepository = new FakeAppointmentsRepository();
@@ -12,6 +12,7 @@ const makeSut = (): CreateAppointmentService => {
 
 const appointmentData = {
   date: new Date(),
+  user_id: 'valid_user_id',
   provider_id: 'valid_id',
 };
 
