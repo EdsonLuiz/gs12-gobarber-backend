@@ -13,13 +13,14 @@ class AppointmentRepository implements IAppointmentsRepository {
     month,
     year,
   }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
-    const appointments = this.appointments.filter(
+    const returnedAppointments = this.appointments.filter(
       appointment =>
+        month === getMonth(appointment.date) + 1 &&
         appointment.provider_id === provider_id &&
-        getMonth(appointment.date) + 1 === month &&
         getYear(appointment.date) === year,
     );
-    return appointments;
+
+    return returnedAppointments;
   }
 
   public async findByDate(date: Date): Promise<Appointment | undefined> {
