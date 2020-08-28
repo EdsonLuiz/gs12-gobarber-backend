@@ -2,44 +2,76 @@ import FakeAppointmentsRepository from '@modules/appointments/repositories/fakes
 import AppError from '@shared/errors/AppError';
 import CreateAppointmentService from './CreateAppointmentService';
 
-const makeSut = (): CreateAppointmentService => {
-  const fakeAppointmentsRepository = new FakeAppointmentsRepository();
-  const createAppointment = new CreateAppointmentService(
-    fakeAppointmentsRepository,
-  );
-  return createAppointment;
-};
-
-const appointmentData = {
-  date: new Date(),
-  user_id: 'valid_user_id',
-  provider_id: 'valid_id',
-};
+let fakeAppointmentsRepository: FakeAppointmentsRepository;
+let createAppointmentService: CreateAppointmentService;
+let appointmentData: { date: Date; user_id: string; provider_id: string };
 
 describe('CreateAppointmentService', () => {
-  it('Should be able to create new appointment with correct values', async () => {
-    const sut = makeSut();
-    const createAppointmentServiceSpy = jest.spyOn(sut, 'execute');
+  beforeEach(() => {
+    appointmentData = {
+      date: new Date(2020, 4, 10, 14),
+      user_id: 'valid_user_id',
+      provider_id: 'valid_id',
+    };
+    fakeAppointmentsRepository = new FakeAppointmentsRepository();
+    createAppointmentService = new CreateAppointmentService(
+      fakeAppointmentsRepository,
+    );
+    jest.spyOn(Date, 'now').mockImplementation(() => {
+      return new Date(2020, 4, 10, 12).getTime();
+    });
+  });
 
-    await sut.execute(appointmentData);
+  it('Should be able to create new appointment with correct values', async () => {
+    const createAppointmentServiceSpy = jest.spyOn(
+      createAppointmentService,
+      'execute',
+    );
+
+    await createAppointmentService.execute(appointmentData);
 
     expect(createAppointmentServiceSpy).toHaveBeenCalledWith(appointmentData);
   });
 
   it('Should be abble to create a new appointment', async () => {
-    const createAppointment = makeSut();
-
-    const appointment = await createAppointment.execute(appointmentData);
+    const appointment = await createAppointmentService.execute(appointmentData);
 
     expect(appointment).toHaveProperty('id');
   });
 
   it('Should not be abble to create two appointments at the same time', async () => {
-    const createAppointment = makeSut();
+    await createAppointmentService.execute(appointmentData);
 
-    await createAppointment.execute(appointmentData);
+    const promise = createAppointmentService.execute(appointmentData);
 
-    const promise = createAppointment.execute(appointmentData);
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('Should not be able to create an appointment in a past date', async () => {
+    appointmentData.date = new Date(2020, 4, 10, 11);
+    const promise = createAppointmentService.execute(appointmentData);
+
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('Should not be able to create an appointment with same user as provider', async () => {
+    appointmentData.provider_id = 'same_id';
+    appointmentData.user_id = 'same_id';
+    const promise = createAppointmentService.execute(appointmentData);
+
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('Should no be abble to create a new appointment before 8 AM', async () => {
+    appointmentData.date = new Date(2020, 4, 12, 7);
+    const promise = createAppointmentService.execute(appointmentData);
+
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('Should no be abble to create a new appointment after 5 PM', async () => {
+    appointmentData.date = new Date(2020, 4, 12, 18);
+    const promise = createAppointmentService.execute(appointmentData);
 
     await expect(promise).rejects.toBeInstanceOf(AppError);
   });
