@@ -30,7 +30,7 @@ describe('ListProviderAppointmentsService', () => {
       year: 2020,
       month: 5,
     });
-    // expect(availability).toEqual(expect.arrayContaining(createdAppointmeents));
+
     expect(availability).toEqual(createdAppointmeents);
   });
 });
