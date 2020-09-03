@@ -48,9 +48,9 @@ class AuthenticateUserService {
     // delete user.password;
 
     const { secret, expiresIn } = authConfig.jwt;
-    if (!secret) {
-      throw new AppError('Some error when try authenticate');
-    }
+    // if (!secret) {
+    //   throw new AppError('Some error when try authenticate');
+    // }
 
     const token = sign({}, secret, {
       subject: user.id,

@@ -2,11 +2,17 @@ import FakeUsersRepository from '@modules/users/repositories/fakes/FakeUsersRepo
 import FakeHashProvider from '@modules/users/providers/HashProvider/fakes/FakeHashProvider';
 import CreateUserService from '@modules/users/services/CreateUserService';
 import AppError from '@shared/errors/AppError';
+import { FakeCacheProvider } from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
 
 const makeSut = (): CreateUserService => {
   const fakeUsersRepository = new FakeUsersRepository();
   const fakeHashProvider = new FakeHashProvider();
-  return new CreateUserService(fakeUsersRepository, fakeHashProvider);
+  const fakeCacheProvider = new FakeCacheProvider();
+  return new CreateUserService(
+    fakeUsersRepository,
+    fakeHashProvider,
+    fakeCacheProvider,
+  );
 };
 
 const fakeUserData = {

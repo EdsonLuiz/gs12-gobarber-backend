@@ -3,6 +3,7 @@ import FakeHashProvider from '@modules/users/providers/HashProvider/fakes/FakeHa
 import AuthenticateUserService from '@modules/users/services/AuthenticateUserService';
 import CreateUserService from '@modules/users/services/CreateUserService';
 import AppError from '@shared/errors/AppError';
+import { FakeCacheProvider } from '@shared/container/providers/CacheProvider/fakes/FakeCacheProvider';
 
 interface SutTypes {
   sut: AuthenticateUserService;
@@ -12,6 +13,7 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
   const fakeUsersRepository = new FakeUsersRepository();
   const fakeHashProvider = new FakeHashProvider();
+  const fakeCacheProvider = new FakeCacheProvider();
   const sut = new AuthenticateUserService(
     fakeUsersRepository,
     fakeHashProvider,
@@ -19,6 +21,7 @@ const makeSut = (): SutTypes => {
   const makeCreateUser = new CreateUserService(
     fakeUsersRepository,
     fakeHashProvider,
+    fakeCacheProvider,
   );
   return { sut, makeCreateUser };
 };

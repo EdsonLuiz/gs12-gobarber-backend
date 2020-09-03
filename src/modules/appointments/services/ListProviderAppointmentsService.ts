@@ -44,8 +44,6 @@ export class ListProviderAppointmentsService {
         },
       );
       await this.cacheProvider.save(cacheKey, appointments);
-      console.log('Buscou no banco ListProviders');
-      console.log(`${appointments}`);
     }
 
     //
