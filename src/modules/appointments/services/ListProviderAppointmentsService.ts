@@ -27,19 +27,28 @@ export class ListProviderAppointmentsService {
     month,
     year,
   }: Request): Promise<Appointment[]> {
-    const cacheData = await this.cacheProvider.recover('this');
-    console.log(cacheData);
+    const prefix = 'provider-appointments';
+    const cacheKey = `${prefix}:${provider_id}:${year}-${month}-${day}`;
 
-    const appointments = await this.appointmentsRepository.findAllInDayFromProvider(
-      {
-        provider_id,
-        day,
-        month,
-        year,
-      },
+    let appointments = await this.cacheProvider.recover<Appointment[]>(
+      cacheKey,
     );
 
-    // await this.cacheProvider.save('this', 'ok');
+    if (!appointments) {
+      appointments = await this.appointmentsRepository.findAllInDayFromProvider(
+        {
+          provider_id,
+          day,
+          month,
+          year,
+        },
+      );
+      await this.cacheProvider.save(cacheKey, appointments);
+      console.log('Buscou no banco ListProviders');
+      console.log(`${appointments}`);
+    }
+
+    //
 
     return appointments;
   }

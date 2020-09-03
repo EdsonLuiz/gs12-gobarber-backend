@@ -6,6 +6,7 @@ import IappointmentsRepository from '@modules/appointments/repositories/IAppoint
 
 import AppError from '@shared/errors/AppError';
 import { INotificationsRepository } from '@modules/notifications/repositories/INotificationsRepository';
+import { ICacheProvider } from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 
 interface Iresquest {
   provider_id: string;
@@ -21,6 +22,9 @@ class CreateAppointmentService {
 
     @inject('NotificationsRepository')
     private readonly notificationsRepository: INotificationsRepository,
+
+    @inject('CacheProvider')
+    private cacheProvider: ICacheProvider,
   ) {}
 
   public async execute({
@@ -34,6 +38,12 @@ class CreateAppointmentService {
     const hasUserAndProviderSameId = user_id === provider_id;
     const isBefore8AM = getHours(appointmentDate) < 8;
     const isAfter5PM = getHours(appointmentDate) > 17;
+
+    const prefix = 'provider-appointments';
+    const cacheKey = `${prefix}:${provider_id}:${format(
+      appointmentDate,
+      'yyyy-M-d',
+    )}`;
 
     if (!nowIsBeforeAppointmentDate) {
       throw new AppError('You can not  create an appointment in a past date.');
@@ -66,6 +76,8 @@ class CreateAppointmentService {
       content: `Novo agendamento para o dia ${dateFormated}`,
       recipient_id: provider_id,
     });
+
+    await this.cacheProvider.invalidate(cacheKey);
 
     return createdAppointmeent;
   }
